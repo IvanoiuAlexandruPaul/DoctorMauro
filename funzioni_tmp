@@ -1,0 +1,101 @@
+case DESTRA:
+			spostamento = 1;
+			
+			posiziona(gioco, &i, &j, identificatore);
+			if(j + spostamento < COLONNE)/* posso muovermi a destra? */
+			{
+				if((gioco->campo[i][j + spostamento]).tipo == PASTIGLIA)/* alla mia destra ho una pastiglia? */
+				{
+					if((gioco->campo[i][j]).id - (gioco->campo[i][j + spostamento]).id >= -1 || (gioco->campo[i][j]).id - (gioco->campo[i][j + spostamento]).id <= 1)/* la pastiglia alla mia destra è il mio compagno? */
+					{
+						if(j + 2*spostamento < COLONNE)/* il mio compagno può muoversi a destra? */
+						{/*printf("blocco here	i: %d	j:%d\n",i,j);*/
+							setta_cella(gioco, i, j + 2*spostamento, PASTIGLIA, (gioco->campo[i][j + spostamento]).colore, (gioco->campo[i][j + spostamento]).id);/* sposta il mio compagno a destra */
+							setta_cella(gioco, i, j + spostamento, VUOTO, NO_COLOUR, -1); /* elimina il mio compagno dalla sua posizione precedente */
+							
+							setta_cella(gioco, i, j + spostamento, PASTIGLIA, (gioco->campo[i][j]).colore, (gioco->campo[i][j]).id);/* sposta me alla posizione precedente del mio compagno */
+							setta_cella(gioco, i, j, VUOTO, NO_COLOUR, -1);
+							return 1;
+						}
+						else
+							return 0;
+					}
+					else
+						return 0;
+				}
+				else
+				{
+					if((gioco->campo[i][j + spostamento].tipo == VUOTO)/* affianco non ho nulla? */
+					{
+							setta_cella(gioco, i, j + 2*spostamento, PASTIGLIA, (gioco->campo[i][j + spostamento]).colore, (gioco->campo[i][j + spostamento]).id);/* sposta il mio compagno a destra */
+							setta_cella(gioco, i, j + spostamento, VUOTO, NO_COLOUR, -1); /* elimina il mio compagno dalla sua posizione precedente */
+							
+							setta_cella(gioco, i, j + spostamento, PASTIGLIA, (gioco->campo[i][j]).colore, (gioco->campo[i][j]).id);/* sposta me alla posizione precedente del mio compagno */
+							setta_cella(gioco, i, j, VUOTO, NO_COLOUR, -1);
+							return 1;
+					}
+					else
+						return 0;
+				}
+			}
+			else
+				return 0;
+			
+			break;
+		case SINISTRA:
+			break;
+	}
+	
+	
+	
+int muovi_pastiglia(struct gioco *gioco, enum mossa comd, int identificatore){ /* ritorna 1 se il movimento è possibile, 0 altrimenti */
+	int i = 0, j = 0, spostamento_col = 0, spostamento_rig = 0; 
+	
+	switch(comd)
+	{
+		case DESTRA:
+			spostamento_col = 1;
+			break;
+		case SINISTRA:
+			spostamento_col = -1;
+			break;
+		case GIU:
+			spostamento_rig = 1;
+			break;
+		default:
+			spostamento_rig = 0;
+			spostamento_col = 0;
+	}
+	
+	posiziona(gioco, &i, &j, identificatore);
+	
+	if(spostamento_rig == 0 && j + spostamento_col < COLONNE && j + spostamento_col >= 0 && i + spostamento_rig < RIGHE && i + spostamento_rig >= 0)
+	{
+		if((gioco->campo[i][j]).tipo == PASTIGLIA && (gioco->campo[i + spostamento_rig][j + spostamento_col]).tipo == PASTIGLIA)
+		{
+			if((gioco->campo[i][j]).id - (gioco->campo[i + spostamento_rig][j + spostamento_col]).id == -1 || (gioco->campo[i][j]).id - (gioco->campo[i + spostamento_rig][j + spostamento_col]).id == 1)/*se sul mio movimento successivo c'è il mio compagno */
+			{
+				int tmp = (gioco->campo[i][j]).id;/*scambio gli id dei 2 compagni, per far muovere prima la pastiglia con lo spazio libero*/
+				(gioco->campo[i][j]).id = (gioco->campo[i + spostamento_rig][j + spostamento_col]).id;
+				(gioco->campo[i + spostamento_rig][j + spostamento_col]).id = tmp;
+				posiziona(gioco, &i, &j, identificatore);
+			}
+		}
+	}
+	
+	if(j + spostamento_col < COLONNE && j + spostamento_col >= 0 && i + spostamento_rig < RIGHE && i + spostamento_rig >= 0)
+	{
+		if((gioco->campo[i + spostamento_rig][j + spostamento_col]).tipo == VUOTO)
+		{
+			setta_cella(gioco, i + spostamento_rig, j + spostamento_col, (gioco->campo[i][j]).tipo, (gioco->campo[i][j]).colore, (gioco->campo[i][j]).id);/*sposta la pastiglia nella nuova cella*/
+			setta_cella(gioco, i, j, VUOTO, NO_COLOUR, -1);/*cancella la pastiglia dalla veccchia cella*/
+			return 1;
+		}
+		else
+			return 0;
+	}
+	else
+		return 0;
+
+return 0;
+}

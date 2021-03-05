@@ -1,0 +1,70 @@
+int tasto_giu(struct gioco *gioco){
+	int i = RIGHE - 1, j = COLONNE - 1, trovato = 1;
+	
+	while(trovato) /* ripeto lo spostamento in basso finchè la pastiglia può andare giù(ovvero finchè arriva a fine corsa) */
+	{
+		i = RIGHE - 1; j = COLONNE - 1; trovato = 0;
+		
+		while(i >= 0) /* scorro la matrice dal basso verso l'alto */
+		{
+			j = COLONNE - 1;
+			while(j >= 0) /* scorro la matrice dal basso verso l'alto */
+			{
+				if(i + 1 < RIGHE)
+				{
+					if((gioco->campo[i][j]).tipo == PASTIGLIA && ((gioco->campo[(i)][(j)]).id == gioco->active_id || (gioco->campo[(i)][(j)]).id == (gioco->active_id) + 1)) /* guardo se ho trovato l'active_id o il suo compagno */
+					{
+						int direzione, orient, spostamento_rig = 0, spostamento_col = 0;
+					
+						direzione = compagno_near(gioco, (gioco->campo[(i)][(j)]).id);
+						orient = orientamento(gioco, (gioco->campo[(i)][(j)]).id);
+					
+						switch(direzione)
+						{
+							case 1:
+								spostamento_rig = -1;
+								break;
+							case 2:
+								spostamento_col = 1;
+								break;
+							case 3:
+								spostamento_rig = 1;
+								break;
+							case 4:
+								spostamento_col = -1;
+								break;
+							default:
+								break;
+						}
+					
+						if(orient == 2 && ((gioco->campo[i + 1][j]).tipo == VUOTO || (gioco->campo[i + spostamento_rig + 1][j + spostamento_col]).tipo == VUOTO)) /* se la pastiglia è verticale basta che sotto ad una delle 2 ci sia il buco per spostarla */
+						{
+							if(movimento_valido(gioco, (gioco->campo[i][j]).id, GIU))
+							{
+								muovi_pastiglia(gioco, GIU, (gioco->campo[i][j]).id);
+								muovi_pastiglia(gioco, GIU, ((gioco->campo[i][j]).id) + 1);
+								trovato = 1;
+							}
+						}
+						else
+						{
+							if(orient == 1 && (gioco->campo[i + 1][j]).tipo == VUOTO && (gioco->campo[i + spostamento_rig + 1][j + spostamento_col]).tipo == VUOTO) /* se la pastiglia è orrizontale, sotto entrambe deve esserci il buco per poterle muovere in basso */
+							{
+								if(movimento_valido(gioco, (gioco->campo[i][j]).id, GIU))
+								{
+									muovi_pastiglia(gioco, GIU, (gioco->campo[i][j]).id);
+									muovi_pastiglia(gioco, GIU, ((gioco->campo[i][j]).id) + 1);
+									trovato = 1;
+								}
+							}
+						}
+					}
+				}
+				j --;
+			}
+			i --;
+		}
+	}
+
+return trovato;
+}
